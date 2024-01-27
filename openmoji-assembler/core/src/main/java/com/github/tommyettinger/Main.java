@@ -26,17 +26,21 @@ import java.util.regex.Pattern;
 public class Main extends ApplicationAdapter {
     //    public static final String MODE = "EMOJI_MID"; // run this first
 //    public static final String MODE = "EMOJI_SMALL";
-//    public static final String MODE = "EMOJI_LARGE";
+    public static final String MODE = "EMOJI_LARGE";
 //    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
-    public static final String MODE = "MODIFY_JSON";
+//    public static final String MODE = "MODIFY_JSON";
 //    public static final String MODE = "ALTERNATE_PALETTES";
+
+//    public static final String TYPE = "color";
+    public static final String TYPE = "black";
+    public static final String RAW_DIR = "openmoji-72x72-" + TYPE;
 
     @Override
     public void create() {
         JsonReader reader = new JsonReader();
         if("MODIFY_JSON".equals(MODE)) {
-            //To locate any names with non-ASCII chars in emoji.json, use this regex:
+            //To locate any names with non-ASCII chars in openmoji.json, use this regex:
             //"annotation": "[^"]*[^\u0000-\u007F][^"]*",
             //To locate any names with characters that could be a problem, use this regex (may need expanding):
             //"annotation": "[^"]*[^0-9a-zA-Z' ,!-][^"]*",
@@ -47,7 +51,12 @@ public class Main extends ApplicationAdapter {
                 String name = removeAccents(entry.getString("annotation"))
                         .replace(':', ',').replace('“', '\'').replace('”', '\'').replace('’', '\'')
                         .replace(".", "").replace("&", "and");
-                entry.get("annotation").set(name);
+                entry.addChild("name", new JsonValue(name));
+                for(String s : new String[]{
+                        "annotation","subgroups","tags","openmoji_tags","openmoji_author","openmoji_date",
+                        "skintone","skintone_combination","skintone_base_emoji","skintone_base_hexcode","unicode"}){
+                    entry.remove(s);
+                }
             }
 
             Gdx.files.local("openmoji-ascii-names.json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
@@ -70,49 +79,46 @@ public class Main extends ApplicationAdapter {
                 png.setDitherAlgorithm(Dithered.DitherAlgorithm.NONE);
                 png.setDitherStrength(1f);
                 png.setPalette(qp);
-                Pixmap large = new Pixmap(Gdx.files.local("../../atlas/Twemoji.png"));
-                png.write(current.child("atlas/Twemoji.png"), large, false, true);
+                Pixmap large = new Pixmap(Gdx.files.local("../../atlas/OpenMoji"+TYPE+".png"));
+                png.write(current.child("atlas/OpenMoji"+TYPE+".png"), large, false, true);
                 large.dispose();
                 for (int i = 2; i <= 5; i++) {
-                    Pixmap largeN = new Pixmap(Gdx.files.local("../../atlas/Twemoji"+i+".png"));
-                    png.write(current.child("atlas/Twemoji"+i+".png"), largeN, false, true);
+                    Pixmap largeN = new Pixmap(Gdx.files.local("../../atlas/OpenMoji"+TYPE+i+".png"));
+                    png.write(current.child("atlas/OpenMoji"+TYPE+i+".png"), largeN, false, true);
                     largeN.dispose();
                 }
-                Gdx.files.local("../../atlas/Twemoji.atlas").copyTo(current.child("atlas"));
-                Pixmap mid = new Pixmap(Gdx.files.local("../../atlas-mid/Twemoji.png"));
-                png.write(current.child("atlas-mid/Twemoji.png"), mid, false, true);
+                Gdx.files.local("../../atlas/OpenMoji.atlas").copyTo(current.child("atlas"));
+                Pixmap mid = new Pixmap(Gdx.files.local("../../atlas-mid/OpenMoji"+TYPE+".png"));
+                png.write(current.child("atlas-mid/OpenMoji"+TYPE+".png"), mid, false, true);
                 mid.dispose();
-                Gdx.files.local("../../atlas-mid/Twemoji.atlas").copyTo(current.child("atlas-mid"));
-                Pixmap small = new Pixmap(Gdx.files.local("../../atlas-small/Twemoji.png"));
-                png.write(current.child("atlas-small/Twemoji.png"), small, false, true);
+                Gdx.files.local("../../atlas-mid/OpenMoji"+TYPE+".atlas").copyTo(current.child("atlas-mid"));
+                Pixmap small = new Pixmap(Gdx.files.local("../../atlas-small/OpenMoji"+TYPE+".png"));
+                png.write(current.child("atlas-small/OpenMoji"+TYPE+".png"), small, false, true);
                 small.dispose();
-                Gdx.files.local("../../atlas-small/Twemoji.atlas").copyTo(current.child("atlas-small"));
+                Gdx.files.local("../../atlas-small/OpenMoji"+TYPE+".atlas").copyTo(current.child("atlas-small"));
             }
         }
         else if("EMOJI_MID".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("emoji.json"));
+            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
             ObjectSet<String> used = new ObjectSet<>(json.size);
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
-                String name = entry.getString("name")
-//                        .replace(':', ',').replace('“', '\'').replace('”', '\'').replace('’', '\'').replace(".", "").replace("&", "and")
-                        ;
+                String name = entry.getString("name");
                 if(used.add(name)) {
-                    String codename = entry.getString("codes").toLowerCase().replace(' ', '-').replaceAll("\\b0+", "");
-                    String cleaned = codename.replaceAll("-fe0f", "");
-                    String charString = entry.getString("char") + ".png";
+                    String codename = entry.getString("hexcode");
+                    String charString = entry.getString("emoji") + ".png";
                     entry.get("name").set(name);
                     name += ".png";
-                    entry.remove("codes");
-                    FileHandle original = Gdx.files.local("../../scaled-mid/" + cleaned + ".png");
+                    entry.remove("hexcode");
+                    FileHandle original = Gdx.files.local("../../scaled-mid/" + codename + ".png");
                     if (original.exists()) {
-                        original.copyTo(Gdx.files.local("../../renamed-mid/emoji/" + charString));
-                        original.copyTo(Gdx.files.local("../../renamed-mid/name/" + name));
+                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/emoji/" + charString));
+                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/name/" + name));
                     }
                     else {
                         original = Gdx.files.local("../../scaled-mid/" + codename + ".png");
                         if (original.exists()) {
-                            original.copyTo(Gdx.files.local("../../renamed-mid/emoji/" + charString));
-                            original.copyTo(Gdx.files.local("../../renamed-mid/name/" + name));
+                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/emoji/" + charString));
+                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/name/" + name));
                         }
                     }
                 } else {
@@ -122,27 +128,24 @@ public class Main extends ApplicationAdapter {
             Gdx.files.local("emoji-info.json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
         }
         else if("EMOJI_SMALL".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("emoji.json"));
+            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
             ObjectSet<String> used = new ObjectSet<>(json.size);
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
-                String name = entry.getString("name")
-//                        .replace(':', ',').replace('“', '\'').replace('”', '\'').replace('’', '\'').replace(".", "").replace("&", "and")
-                        ;
+                String name = entry.getString("name");
                 if(used.add(name)) {
-                    String codename = entry.getString("codes").toLowerCase().replace(' ', '-').replaceAll("\\b0+", "");
-                    String cleaned = codename.replaceAll("-fe0f", "");
-                    String charString = entry.getString("char") + ".png";
+                    String codename = entry.getString("hexcode");
+                    String charString = entry.getString("emoji") + ".png";
                     name += ".png";
-                    FileHandle original = Gdx.files.local("../../scaled-small/" + cleaned + ".png");
+                    FileHandle original = Gdx.files.local("../../scaled-small/" + codename + ".png");
                     if (original.exists()) {
-                        original.copyTo(Gdx.files.local("../../renamed-small/emoji/" + charString));
-                        original.copyTo(Gdx.files.local("../../renamed-small/name/" + name));
+                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/emoji/" + charString));
+                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/name/" + name));
                     }
                     else {
                         original = Gdx.files.local("../../scaled-small/" + codename + ".png");
                         if (original.exists()) {
-                            original.copyTo(Gdx.files.local("../../renamed-small/emoji/" + charString));
-                            original.copyTo(Gdx.files.local("../../renamed-small/name/" + name));
+                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/emoji/" + charString));
+                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/name/" + name));
                         }
                     }
                 } else {
@@ -151,28 +154,19 @@ public class Main extends ApplicationAdapter {
             }
         }
         else if("EMOJI_LARGE".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("emoji.json"));
+            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
             ObjectSet<String> used = new ObjectSet<>(json.size);
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
-                String name = entry.getString("name")
-//                        .replace(':', ',').replace('“', '\'').replace('”', '\'').replace('’', '\'').replace(".", "").replace("&", "and")
-                        ;
+                String name = entry.getString("name");
                 if(used.add(name)) {
-                    String codename = entry.getString("codes").toLowerCase().replace(' ', '-').replaceAll("\\b0+", "");
-                    String cleaned = codename.replaceAll("-fe0f", "");
-                    String charString = entry.getString("char") + ".png";
+                    String codename = entry.getString("hexcode");
+                    String charString = entry.getString("emoji") + ".png";
                     name += ".png";
-                    FileHandle original = Gdx.files.local("../../individual/" + cleaned + ".png");
-                    if (original.exists()) {  //&& !Gdx.files.local("../../renamed/emoji/" + charString).exists()
-                        original.copyTo(Gdx.files.local("../../renamed/emoji/" + charString));
-                        original.copyTo(Gdx.files.local("../../renamed/name/" + name));
-                    }
-                    else {
-                        original = Gdx.files.local("../../individual/" + codename + ".png");
-                        if (original.exists()) {
-                            original.copyTo(Gdx.files.local("../../renamed/emoji/" + charString));
-                            original.copyTo(Gdx.files.local("../../renamed/name/" + name));
-                        }
+                    FileHandle original = Gdx.files.local("../../"+RAW_DIR+"/" + codename + ".png");
+                    if (original.exists()) {
+                        if(!entry.getString("order", "").isEmpty())
+                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"/emoji/" + charString));
+                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"/name/" + name));
                     }
                 } else {
                     entry.remove();
@@ -186,7 +180,7 @@ public class Main extends ApplicationAdapter {
                     <!doctype html>
                     <html>
                     <head>
-                    \t<title>Twemoji Preview</title>
+                    \t<title>OpenMoji Preview</title>
                     \t<meta http-equiv="content-type" content="text/html; charset=UTF-8">
                     \t<meta id="gameViewport" name="viewport" content="width=device-width initial-scale=1">
                     \t<link href="styles.css" rel="stylesheet" type="text/css">
@@ -194,17 +188,15 @@ public class Main extends ApplicationAdapter {
                     
                     """);
             sb.append("<body>\n");
-            sb.append("<h1>Twemoji Preview</h1>\n");
+            sb.append("<h1>OpenMoji Preview</h1>\n");
             sb.append("<p>This shows all emoji supported by " +
-                    "<a href=\"https://github.com/tommyettinger/twemoji-atlas\">TwemojiAtlas</a>, " +
+                    "<a href=\"https://github.com/tommyettinger/openmoji-atlas\">OpenMojiAtlas</a>, " +
                     "along with the two names each can be looked up by.</p>\n");
-            sb.append("<p>The atlases and all image assets are licensed under CC-BY 4.0, with the same " +
-                    "<a href=\"https://github.com/jdecked/twemoji/tree/v15.0.3?tab=readme-ov-file#attribution-requirements\">permissions granted for twemoji here</a>.</p>\n");
-            sb.append("<p>Thanks to all the <a href=\"https://github.com/jdecked/twemoji?tab=readme-ov-file#committers-and-contributors\">" +
-                    "WordPress, Discord, and ex-Twitter developers</a> who made this project possible!</p>\n");
+            sb.append("<p>The atlases and all image assets are licensed under CC-BY-SA 4.0.</p>\n");
+            sb.append("<p>Thanks to the entire <a href=\"https://openmoji.org/\">OpenMoji project</a>!</p>\n");
             sb.append("<div class=\"box\">\n");
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
-                String emojiChar = entry.getString("char");
+                String emojiChar = entry.getString("emoji");
                 String name = entry.getString("name");
                 String emojiFile = "name/" + name + ".png";
                 sb.append("\t<div class=\"item\">\n" +
@@ -219,17 +211,15 @@ public class Main extends ApplicationAdapter {
             Gdx.files.local("index.html").writeString(sb.toString(), false, "UTF8");
         }
         else if("FLAG".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("emoji.json"));
+            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
             char[] buffer = new char[2];
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 if(!"Flags (country-flag)".equals(entry.getString("category"))) continue;
 
-                String codename = entry.getString("codes").toLowerCase().replace(' ', '-').replaceAll("\\b0+", "") + ".png";
-                String charString = entry.getString("char") + ".png";
-                String name = entry.getString("name")
-//                        .replace(':', ',').replace('“', '\'').replace('”', '\'').replace('’', '\'').replace(".", "").replace("&", "and")
-                        ;
-                String countryUnicode = entry.getString("char");
+                String codename = entry.getString("hexcode") + ".png";
+                String charString = entry.getString("emoji") + ".png";
+                String name = entry.getString("name");
+                String countryUnicode = entry.getString("emoji");
                 buffer[0] = (char)(countryUnicode.codePointAt(1) - 56806 + 'A');
                 buffer[1] = (char)(countryUnicode.codePointAt(3) - 56806 + 'A');
                 String countryCode = String.valueOf(buffer);

@@ -56253,11 +56253,11 @@
     "order": 4346
   },
   {
-    "emoji": "#️⃣",
+    "emoji": "⧈",
     "hexcode": "0023-FE0F-20E3",
     "group": "symbols",
     "subgroups": "keycap",
-    "annotation": "keycap: #",
+    "annotation": "keycap: number sign",
     "tags": "keycap",
     "openmoji_tags": "",
     "openmoji_author": "Selina Lange",
@@ -56270,11 +56270,11 @@
     "order": 4347
   },
   {
-    "emoji": "*️⃣",
+    "emoji": "⧆",
     "hexcode": "002A-FE0F-20E3",
     "group": "symbols",
     "subgroups": "keycap",
-    "annotation": "keycap: *",
+    "annotation": "keycap: asterisk",
     "tags": "keycap",
     "openmoji_tags": "",
     "openmoji_author": "Selina Lange",
