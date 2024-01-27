@@ -28,11 +28,19 @@ import java.util.regex.Pattern;
  * <pre>
  *     magick mogrify -channel RGBA -blur 0x0.8 -unsharp 0x3.0+3.0 "*.png"
  * </pre>
- * To scale thicker black-line-only OpenMoji to mid-size (24x24), use:
+ * To scale thicker black-line-only OpenMoji to mid-size (32x32), use:
+ * <pre>
+ *     magick mogrify -unsharp 0x0.75 -resize 32x32 -unsharp 0x0.5 "*.png"
+ * </pre>
+ * To scale non-thickened colorful OpenMoji to mid-size (32x32), use:
+ * <pre>
+ *     magick mogrify -resize 32x32 -sharpen 0x2.0 "*.png"
+ * </pre>
+ * To scale thicker black-line-only OpenMoji to small-size (24x24), use:
  * <pre>
  *     magick mogrify -unsharp 0x2.0+2.0 -resize 24x24 "*.png"
  * </pre>
- * To scale non-thickened colorful OpenMoji to mid-size (24x24), use:
+ * To scale non-thickened colorful OpenMoji to small-size (24x24), use:
  * <pre>
  *     magick mogrify -resize 24x24 -sharpen 0x2.0 "*.png"
  * </pre>
@@ -40,11 +48,11 @@ import java.util.regex.Pattern;
  * <pre>
  *     magick mogrify -channel RGBA -blur 0x1.6 -unsharp 0x2.5+8.0 "*.png"
  * </pre>
- * To scale thickest black-line-only OpenMoji to small-size (16x16), use:
+ * To scale thickest black-line-only OpenMoji to tiny-size (16x16), use:
  * <pre>
  *     magick mogrify -resize 16x16 -unsharp 0x1.0+1.0 "*.png"
  * </pre>
- * To scale non-thickened colorful OpenMoji to small-size (16x16), use:
+ * To scale non-thickened colorful OpenMoji to tiny-size (16x16), use:
  * <pre>
  *     magick mogrify -resize 16x16 -sharpen 0x2.0 "*.png"
  * </pre>
@@ -205,11 +213,11 @@ public class Main extends ApplicationAdapter {
                     "along with the two names each can be looked up by.</p>\n");
             if(TYPE.equals("color"))
                 sb.append("<p>These are the full-color emoji. There are also emoji that use only a black line "+
-                        "<a href=\"black.html\">available here</a>.</p>");
+                        "<a href=\"black.html\">available here</a>.</p>\n");
             else
                 sb.append("<p>These are the black-line-only emoji. There are also emoji that use full color "+
-                        "<a href=\"index.html\">available here</a>.</p>");
-            sb.append("<p>The atlases and all image assets are licensed under" +
+                        "<a href=\"index.html\">available here</a>.</p>\n");
+            sb.append("<p>The atlases and all image assets are licensed under " +
                     "<a href=\"https://github.com/tommyettinger/openmoji-atlas/blob/main/LICENSE.txt\">CC-BY-SA 4.0</a>.</p>\n");
             sb.append("<p>Thanks to the entire <a href=\"https://openmoji.org/\">OpenMoji project</a>!</p>\n");
             sb.append("<div class=\"box\">\n");

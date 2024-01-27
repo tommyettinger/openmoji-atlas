@@ -1,51 +1,25 @@
-# game-icons-net-atlas
-Texture atlases for the game-icons.net images; libGDX-compatible.
+# openmoji-atlas
+Texture atlases for the [OpenMoji](https://openmoji.org/) emoji set; [libGDX](https://libgdx.com/)-compatible.
 
-The two files needed for the actual atlas are in this folder (the root); they are
-[Game-Icons.atlas](Game-Icons.atlas) and [Game-Icons.png](Game-Icons.png).
-There is a preview with individual names for each icon
-[available here](https://tommyettinger.github.io/game-icons-net-atlas/). You can find icons by parts
-of their names with Ctrl-F; I'm sorry in advance that the page is over 7MB in size.
+# What is it?
 
-You must comply with the terms of the game-icons.net license(s) to use the atlas;
-the license is a Creative Commons one, CC-BY 3.0, and requires crediting at least the authors who
-requested credit, but of course allows crediting all the authors involved.
+Texture atlases are a convenient and efficient way of accessing any of a large number of images without incurring
+performance penalties due to texture swaps. In libGDX games, texture atlases tend to be used heavily, but creating
+them can be a hassle (especially for large atlases). The [OpenMoji](https://openmoji.org/) emoji are a nicely-designed
+set of consistent emoji with wide coverage for Unicode (including the latest standard at the time of writing, 15.0),
+as well as some extra special-use emoji coverage for symbols not in Unicode.
 
-The icons in Game-Icons.png were made by:
+This project exists to put the OpenMoji emoji into texture atlasees so games can use them more easily. This includes
+games that use [TextraTypist](https://github.com/tommyettinger/textratypist/), which can load emoji atlases as a main
+feature. This project also does some work to resize the initially-72x72 OpenMoji images to 32x32, 24x24, or even 16x16.
+This involved thickening lines and sharpening blur on resize, and should produce more legible emoji at small sizes
+compared to naively scaling down with a default filter.
 
-- Lorc, http://lorcblog.blogspot.com
-- Delapouite, https://delapouite.com
-- John Colburn, http://ninmunanmu.com
-- Felbrigg, http://blackdogofdoom.blogspot.co.uk
-- John Redman, http://www.uniquedicetowers.com
-- Carl Olsen, https://twitter.com/unstoppableCarl
-- Sbed, http://opengameart.org/content/95-game-icons
-- PriorBlue
-- Willdabeast, http://wjbstories.blogspot.com
-- Viscious Speed, http://viscious-speed.deviantart.com
-- Lord Berandas, http://berandas.deviantart.com
-- Irongamer, http://ecesisllc.wix.com/home
-- HeavenlyDog, http://www.gnomosygoblins.blogspot.com
-- Lucas
-- Faithtoken, http://fungustoken.deviantart.com
-- Skoll
-- Andy Meneely, http://www.se.rit.edu/~andy/
-- Cathelineau
-- Kier Heyl
-- Aussiesim
-- Sparker, http://citizenparker.com
-- Zeromancer
-- Rihlsul
-- Quoting
-- Guard13007, https://guard13007.com
-- DarkZaitzev, http://darkzaitzev.deviantart.com
-- SpencerDub
-- GeneralAce135
-- Zajkonur
-- Catsu
-- Starseeker
-- Pepijn Poolman
-- Pierre Leducq
-- Caro Asercion
+# How do I get it?
 
-(Projects that use this atlas can copy the above list of Game-Icons.png contributors to comply with its license.)
+The atlases currently haven't been built yet, but that shouldn't take much other than time to compile thousands of images
+into one (or possibly more) atlas pages. When the atlases are ready, they will be placed in [atlases/](atlases/).
+
+# License
+
+[CC-BY-SA 4.0](LICENSE.txt).
