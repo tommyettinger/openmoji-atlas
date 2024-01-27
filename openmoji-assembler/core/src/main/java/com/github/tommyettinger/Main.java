@@ -23,10 +23,20 @@ import com.github.tommyettinger.anim8.QualityPalette;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
+/**
+ * To thicken a black-line-only OpenMoji image, use:
+ * <pre>
+ *     magick mogrify -channel RGBA -blur 0x0.8 -unsharp 0x3.0+3.0 "*.png"
+ * </pre>
+ * To scale thickened black-line-only OpenMoji to mid-size (24x24), use:
+ * <pre>
+ *     magick mogrify -unsharp 0x2.0+2.0 -resize 24x24 "*.png"
+ * </pre>
+ */
 public class Main extends ApplicationAdapter {
-    //    public static final String MODE = "EMOJI_MID"; // run this first
+        public static final String MODE = "EMOJI_MID"; // run this first
 //    public static final String MODE = "EMOJI_SMALL";
-    public static final String MODE = "EMOJI_LARGE";
+//    public static final String MODE = "EMOJI_LARGE";
 //    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
 //    public static final String MODE = "MODIFY_JSON";
@@ -52,9 +62,12 @@ public class Main extends ApplicationAdapter {
                         .replace(':', ',').replace('“', '\'').replace('”', '\'').replace('’', '\'')
                         .replace(".", "").replace("&", "and");
                 entry.addChild("name", new JsonValue(name));
+                if(entry.getString("order", "").isEmpty())
+                    entry.remove("emoji");
                 for(String s : new String[]{
                         "annotation","subgroups","tags","openmoji_tags","openmoji_author","openmoji_date",
-                        "skintone","skintone_combination","skintone_base_emoji","skintone_base_hexcode","unicode"}){
+                        "skintone","skintone_combination","skintone_base_emoji","skintone_base_hexcode",
+                        "unicode","order"}){
                     entry.remove(s);
                 }
             }
@@ -104,22 +117,13 @@ public class Main extends ApplicationAdapter {
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 String name = entry.getString("name");
                 if(used.add(name)) {
-                    String codename = entry.getString("hexcode");
-                    String charString = entry.getString("emoji") + ".png";
-                    entry.get("name").set(name);
                     name += ".png";
                     entry.remove("hexcode");
-                    FileHandle original = Gdx.files.local("../../scaled-mid/" + codename + ".png");
+                    FileHandle original = Gdx.files.local("../../scaled-mid-"+TYPE+"/name/" + name + ".png");
                     if (original.exists()) {
-                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/emoji/" + charString));
-                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/name/" + name));
-                    }
-                    else {
-                        original = Gdx.files.local("../../scaled-mid/" + codename + ".png");
-                        if (original.exists()) {
-                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/emoji/" + charString));
-                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-mid/name/" + name));
-                        }
+                        if(entry.hasChild("emoji"))
+                            original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
+                        original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/name/" + name));
                     }
                 } else {
                     entry.remove();
@@ -160,12 +164,11 @@ public class Main extends ApplicationAdapter {
                 String name = entry.getString("name");
                 if(used.add(name)) {
                     String codename = entry.getString("hexcode");
-                    String charString = entry.getString("emoji") + ".png";
                     name += ".png";
                     FileHandle original = Gdx.files.local("../../"+RAW_DIR+"/" + codename + ".png");
                     if (original.exists()) {
-                        if(!entry.getString("order", "").isEmpty())
-                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"/emoji/" + charString));
+                        if(entry.hasChild("emoji"))
+                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
                         original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"/name/" + name));
                     }
                 } else {
