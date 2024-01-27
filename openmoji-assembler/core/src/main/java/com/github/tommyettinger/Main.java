@@ -44,12 +44,16 @@ import java.util.regex.Pattern;
  * <pre>
  *     magick mogrify -resize 16x16 -unsharp 0x1.0+1.0 "*.png"
  * </pre>
+ * To scale non-thickened colorful OpenMoji to small-size (16x16), use:
+ * <pre>
+ *     magick mogrify -resize 16x16 -sharpen 0x2.0 "*.png"
+ * </pre>
  */
 public class Main extends ApplicationAdapter {
 //        public static final String MODE = "EMOJI_MID"; // run this first
-    public static final String MODE = "EMOJI_SMALL";
+//    public static final String MODE = "EMOJI_SMALL";
 //    public static final String MODE = "EMOJI_LARGE";
-//    public static final String MODE = "EMOJI_HTML";
+    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
 //    public static final String MODE = "MODIFY_JSON";
 //    public static final String MODE = "ALTERNATE_PALETTES";
@@ -199,23 +203,29 @@ public class Main extends ApplicationAdapter {
             sb.append("<p>This shows all emoji supported by " +
                     "<a href=\"https://github.com/tommyettinger/openmoji-atlas\">OpenMojiAtlas</a>, " +
                     "along with the two names each can be looked up by.</p>\n");
-            sb.append("<p>The atlases and all image assets are licensed under CC-BY-SA 4.0.</p>\n");
+            if(TYPE.equals("color"))
+                sb.append("<p>These are the full-color emoji. There are also emoji that use only a black line "+
+                        "<a href=\"black.html\">available here</a>.</p>");
+            else
+                sb.append("<p>These are the black-line-only emoji. There are also emoji that use full color "+
+                        "<a href=\"index.html\">available here</a>.</p>");
+            sb.append("<p>The atlases and all image assets are licensed under" +
+                    "<a href=\"https://github.com/tommyettinger/openmoji-atlas/blob/main/LICENSE.txt\">CC-BY-SA 4.0</a>.</p>\n");
             sb.append("<p>Thanks to the entire <a href=\"https://openmoji.org/\">OpenMoji project</a>!</p>\n");
             sb.append("<div class=\"box\">\n");
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
-                String emojiChar = entry.getString("emoji");
+                String emojiChar = entry.getString("emoji", "");
                 String name = entry.getString("name");
                 String emojiFile = "name/" + name + ".png";
                 sb.append("\t<div class=\"item\">\n" +
-                                "\t\t<img src=\"")
-                        .append(emojiFile).append("\" alt=\"").append(name).append("\" />\n")
-                        .append("\t\t<p>").append(emojiChar).append("</p>\n")
-                        .append("\t\t<p>").append(name).append("</p>\n")
-                        .append("\t</div>\n");
+                                "\t\t<img src=\"").append(TYPE).append('/')
+                        .append(emojiFile).append("\" alt=\"").append(name).append("\" />\n");
+                if(!emojiChar.isEmpty()) sb.append("\t\t<p>").append(emojiChar).append("</p>\n");
+                sb.append("\t\t<p>").append(name).append("</p>\n").append("\t</div>\n");
             }
             sb.append("</div>\n</body>\n");
             sb.append("</html>\n");
-            Gdx.files.local("index.html").writeString(sb.toString(), false, "UTF8");
+            Gdx.files.local(TYPE.equals("color") ? "index.html" : "black.html").writeString(sb.toString(), false, "UTF8");
         }
         else if("FLAG".equals(MODE)) {
             JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
