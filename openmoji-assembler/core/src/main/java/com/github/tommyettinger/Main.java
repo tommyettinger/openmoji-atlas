@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * <pre>
  *     magick mogrify -channel RGBA -blur 0x0.8 -unsharp 0x3.0+3.0 "*.png"
  * </pre>
- * To scale thickened black-line-only OpenMoji to mid-size (24x24), use:
+ * To scale thicker black-line-only OpenMoji to mid-size (24x24), use:
  * <pre>
  *     magick mogrify -unsharp 0x2.0+2.0 -resize 24x24 "*.png"
  * </pre>
@@ -36,10 +36,18 @@ import java.util.regex.Pattern;
  * <pre>
  *     magick mogrify -resize 24x24 -sharpen 0x2.0 "*.png"
  * </pre>
+ * To thicken a black-line-only OpenMoji image more (to "thickest" level), use:
+ * <pre>
+ *     magick mogrify -channel RGBA -blur 0x1.6 -unsharp 0x2.5+8.0 "*.png"
+ * </pre>
+ * To scale thickest black-line-only OpenMoji to small-size (16x16), use:
+ * <pre>
+ *     magick mogrify -resize 16x16 -unsharp 0x1.0+1.0 "*.png"
+ * </pre>
  */
 public class Main extends ApplicationAdapter {
-        public static final String MODE = "EMOJI_MID"; // run this first
-//    public static final String MODE = "EMOJI_SMALL";
+//        public static final String MODE = "EMOJI_MID"; // run this first
+    public static final String MODE = "EMOJI_SMALL";
 //    public static final String MODE = "EMOJI_LARGE";
 //    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
@@ -141,20 +149,12 @@ public class Main extends ApplicationAdapter {
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 String name = entry.getString("name");
                 if(used.add(name)) {
-                    String codename = entry.getString("hexcode");
-                    String charString = entry.getString("emoji") + ".png";
                     name += ".png";
-                    FileHandle original = Gdx.files.local("../../scaled-small/" + codename + ".png");
+                    FileHandle original = Gdx.files.local("../../scaled-small-"+TYPE+"/name/" + name);
                     if (original.exists()) {
-                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/emoji/" + charString));
-                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/name/" + name));
-                    }
-                    else {
-                        original = Gdx.files.local("../../scaled-small/" + codename + ".png");
-                        if (original.exists()) {
-                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/emoji/" + charString));
-                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"-small/name/" + name));
-                        }
+                        if(entry.has("emoji"))
+                            original.copyTo(Gdx.files.local("../../renamed-small-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
+                        original.copyTo(Gdx.files.local("../../renamed-small-"+TYPE+"/name/" + name));
                     }
                 } else {
                     entry.remove();
