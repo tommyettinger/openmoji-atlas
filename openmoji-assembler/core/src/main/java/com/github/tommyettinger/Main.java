@@ -32,6 +32,10 @@ import java.util.regex.Pattern;
  * <pre>
  *     magick mogrify -unsharp 0x2.0+2.0 -resize 24x24 "*.png"
  * </pre>
+ * To scale non-thickened colorful OpenMoji to mid-size (24x24), use:
+ * <pre>
+ *     magick mogrify -resize 24x24 -sharpen 0x2.0 "*.png"
+ * </pre>
  */
 public class Main extends ApplicationAdapter {
         public static final String MODE = "EMOJI_MID"; // run this first
@@ -119,9 +123,9 @@ public class Main extends ApplicationAdapter {
                 if(used.add(name)) {
                     name += ".png";
                     entry.remove("hexcode");
-                    FileHandle original = Gdx.files.local("../../scaled-mid-"+TYPE+"/name/" + name + ".png");
+                    FileHandle original = Gdx.files.local("../../scaled-mid-"+TYPE+"/name/" + name);
                     if (original.exists()) {
-                        if(entry.hasChild("emoji"))
+                        if(entry.has("emoji"))
                             original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
                         original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/name/" + name));
                     }
@@ -129,7 +133,7 @@ public class Main extends ApplicationAdapter {
                     entry.remove();
                 }
             }
-            Gdx.files.local("emoji-info.json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
+            Gdx.files.local("openmoji-info.json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
         }
         else if("EMOJI_SMALL".equals(MODE)) {
             JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
@@ -177,7 +181,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         else if("EMOJI_HTML".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("emoji-info.json"));
+            JsonValue json = reader.parse(Gdx.files.internal("openmoji-info.json"));
             StringBuilder sb = new StringBuilder(4096);
             sb.append("""
                     <!doctype html>
