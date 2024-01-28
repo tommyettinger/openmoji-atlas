@@ -17,10 +17,16 @@ compared to naively scaling down with a default filter.
 
 # How do I get it?
 
-Atlases are available for 24x24 (small) and 32x32 (mid) sizes of OpenMoji. They come in (currently) full-color and
-black-line-only versions. You can choose from [atlas-small-black](atlas-small-black/), [atlas-small-color](atlas-small-color/),
-[atlas-mid-black](atlas-mid-black/), and [atlas-mid-color](atlas-mid-color/). The black-line-only versions can't be
-recolored using a typical SpriteBatch with its default shader; I'm working on white-line-only versions.
+Atlases are available for 24x24 (small) and 32x32 (mid) sizes of OpenMoji. They come in full-color, black-line-only, and
+white-line-only versions. You can choose from [atlas-small-color](atlas-small-color/), [atlas-small-black](atlas-small-black/),
+[atlas-small-white](atlas-small-white/), [atlas-mid-color](atlas-mid-color/), [atlas-mid-black](atlas-mid-black/), and
+[atlas-mid-white](atlas-mid-white/). The black-line-only versions can't be recolored using a typical SpriteBatch with
+its default shader, but the white-line-only versions can be colored normally using `Batch#setColor(Color)`. The
+full-color versions sometimes use larger textures than the black or white line versions, but this is because the line
+versions show almost all flags identically (as an empty rectangle), and those get merged in the atlas. The full-color
+version has many flags in relatively high detail. The white-line-only version describes the names of colors as if black
+describes the current color of the emoji, so `⚫️`, or `black circle`, will draw as a circle with white fill if the Batch
+color is white, a red circle if the Batch color is red, or a black circle of the Batch color is black, for example.
 
 # License
 
