@@ -17,8 +17,10 @@ compared to naively scaling down with a default filter.
 
 # How do I get it?
 
-The atlases currently haven't been built yet, but that shouldn't take much other than time to compile thousands of images
-into one (or possibly more) atlas pages. When the atlases are ready, they will be placed in [atlases/](atlases/).
+Atlases are available for 24x24 (small) and 32x32 (mid) sizes of OpenMoji. They come in (currently) full-color and
+black-line-only versions. You can choose from [atlas-small-black](atlas-small-black/), [atlas-small-color](atlas-small-color/),
+[atlas-mid-black](atlas-mid-black/), and [atlas-mid-color](atlas-mid-color/). The black-line-only versions can't be
+recolored using a typical SpriteBatch with its default shader; I'm working on white-line-only versions.
 
 # License
 
