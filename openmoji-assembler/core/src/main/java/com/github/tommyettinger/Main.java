@@ -58,10 +58,10 @@ import java.util.regex.Pattern;
  * </pre>
  */
 public class Main extends ApplicationAdapter {
-//        public static final String MODE = "EMOJI_MID"; // run this first
+    public static final String MODE = "EMOJI_LARGE"; // run this first
+//        public static final String MODE = "EMOJI_MID";
 //    public static final String MODE = "EMOJI_SMALL";
-//    public static final String MODE = "EMOJI_LARGE";
-    public static final String MODE = "EMOJI_HTML";
+//    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
 //    public static final String MODE = "MODIFY_JSON";
 //    public static final String MODE = "ALTERNATE_PALETTES";
@@ -69,6 +69,10 @@ public class Main extends ApplicationAdapter {
 //    public static final String TYPE = "color";
     public static final String TYPE = "black";
     public static final String RAW_DIR = "openmoji-72x72-" + TYPE;
+
+    public static final boolean UNICODE_ONLY = true;
+    public static final String SPAN = UNICODE_ONLY ? "limited" : "expanded";
+    public static final String JSON = "openmoji-" + SPAN + ".json";
 
     @Override
     public void create() {
@@ -82,12 +86,18 @@ public class Main extends ApplicationAdapter {
             //"annotation": "[^"]*[^0-9a-zA-Z' ,:\(\)!-][^"]*",
             JsonValue json = reader.parse(Gdx.files.internal("openmoji.json"));
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
+                if(entry.getString("group", "").equals("extras-openmoji")) {
+                    if (UNICODE_ONLY) {
+                        entry.remove();
+                        continue;
+                    } else {
+                        entry.remove("emoji");
+                    }
+                }
                 String name = removeAccents(entry.getString("annotation"))
                         .replace(':', ',').replace('“', '\'').replace('”', '\'').replace('’', '\'')
                         .replace(".", "").replace("&", "and");
                 entry.addChild("name", new JsonValue(name));
-                if(entry.getString("order", "").isEmpty())
-                    entry.remove("emoji");
                 for(String s : new String[]{
                         "annotation","subgroups","tags","openmoji_tags","openmoji_author","openmoji_date",
                         "skintone","skintone_combination","skintone_base_emoji","skintone_base_hexcode",
@@ -96,7 +106,7 @@ public class Main extends ApplicationAdapter {
                 }
             }
 
-            Gdx.files.local("openmoji-ascii-names.json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
+            Gdx.files.local(JSON).writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
         }
         else if("ALTERNATE_PALETTES".equals(MODE)) {
             FileHandle paletteDir = Gdx.files.local("../../alt-palette/");
@@ -136,7 +146,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         else if("EMOJI_MID".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
+            JsonValue json = reader.parse(Gdx.files.internal(JSON));
             ObjectSet<String> used = new ObjectSet<>(json.size);
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 String name = entry.getString("name");
@@ -153,10 +163,10 @@ public class Main extends ApplicationAdapter {
                     entry.remove();
                 }
             }
-            Gdx.files.local("openmoji-info.json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
+            Gdx.files.local("openmoji-info-" + SPAN + ".json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
         }
         else if("EMOJI_SMALL".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
+            JsonValue json = reader.parse(Gdx.files.internal(JSON));
             ObjectSet<String> used = new ObjectSet<>(json.size);
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 String name = entry.getString("name");
@@ -174,7 +184,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         else if("EMOJI_LARGE".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
+            JsonValue json = reader.parse(Gdx.files.internal(JSON));
             ObjectSet<String> used = new ObjectSet<>(json.size);
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 String name = entry.getString("name");
@@ -183,9 +193,9 @@ public class Main extends ApplicationAdapter {
                     name += ".png";
                     FileHandle original = Gdx.files.local("../../"+RAW_DIR+"/" + codename + ".png");
                     if (original.exists()) {
-                        if(entry.hasChild("emoji"))
-                            original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
-                        original.copyTo(Gdx.files.local("../../renamed-"+TYPE+"/name/" + name));
+                        if(entry.has("emoji"))
+                            original.copyTo(Gdx.files.local("../../"+SPAN+"/renamed-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
+                        original.copyTo(Gdx.files.local("../../"+SPAN+"/renamed-"+TYPE+"/name/" + name));
                     }
                 } else {
                     entry.remove();
@@ -193,7 +203,7 @@ public class Main extends ApplicationAdapter {
             }
         }
         else if("EMOJI_HTML".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("openmoji-info.json"));
+            JsonValue json = reader.parse(Gdx.files.internal("openmoji-info-" + SPAN + ".json"));
             StringBuilder sb = new StringBuilder(4096);
             sb.append("""
                     <!doctype html>
@@ -213,10 +223,22 @@ public class Main extends ApplicationAdapter {
                     "along with the two names each can be looked up by.</p>\n");
             if(TYPE.equals("color"))
                 sb.append("<p>These are the full-color emoji. There are also emoji that use only a black line "+
-                        "<a href=\"black.html\">available here</a>.</p>\n");
+                        "<a href=\"black").append(UNICODE_ONLY ? "" : "-expanded").append(".html\">available here</a>.</p>\n");
             else
                 sb.append("<p>These are the black-line-only emoji. There are also emoji that use full color "+
-                        "<a href=\"index.html\">available here</a>.</p>\n");
+                        "<a href=\"index").append(UNICODE_ONLY ? "" : "-expanded").append(".html\">available here</a>.</p>\n");
+            if(UNICODE_ONLY)
+                sb.append("<p>This list only includes emoji that can be represented with official (or semi-official)" +
+                        "Unicode codepoints. " +
+                        "It does not include the extra icons only found in OpenMoji, which are harder to type. " +
+                        "The expanded list of full-color emoji is <a href=\"index-expanded.html\">here</a>, " +
+                        "and the expanded list of black-line-only emoji is <a href=\"black-expanded.html\">here</a>.</p>\n");
+            else
+                sb.append("<p>This list includes some emoji that cannot be represented with official (or semi-official)" +
+                        "Unicode codepoints; these are extra icons only found in OpenMoji. They are harder to type. " +
+                        "There are also lists of only official and semi-official emoji here, which are easier to use. " +
+                        "The official list of full-color emoji is <a href=\"index.html\">here</a>, " +
+                        "and the official list of black-line-only emoji is <a href=\"black.html\">here</a>.</p>\n");
             sb.append("<p>The atlases and all image assets are licensed under " +
                     "<a href=\"https://github.com/tommyettinger/openmoji-atlas/blob/main/LICENSE.txt\">CC-BY-SA 4.0</a>.</p>\n");
             sb.append("<p>Thanks to the entire <a href=\"https://openmoji.org/\">OpenMoji project</a>!</p>\n");
@@ -233,10 +255,12 @@ public class Main extends ApplicationAdapter {
             }
             sb.append("</div>\n</body>\n");
             sb.append("</html>\n");
-            Gdx.files.local(TYPE.equals("color") ? "index.html" : "black.html").writeString(sb.toString(), false, "UTF8");
+            Gdx.files.local(TYPE.equals("color")
+                    ? UNICODE_ONLY ? "index.html" : "index-expanded.html"
+                    : UNICODE_ONLY ? "black.html" : "black-expanded.html").writeString(sb.toString(), false, "UTF8");
         }
         else if("FLAG".equals(MODE)) {
-            JsonValue json = reader.parse(Gdx.files.internal("openmoji-ascii-names.json"));
+            JsonValue json = reader.parse(Gdx.files.internal(JSON));
             char[] buffer = new char[2];
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 if(!"Flags (country-flag)".equals(entry.getString("category"))) continue;
