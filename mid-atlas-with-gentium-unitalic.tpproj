@@ -1,4 +1,4 @@
-name=OpenMojiWithYanoneKaffeesatz
+name=OpenMojiWithGentiumUnItalic
 filename=
 output=packable-atlases/atlas-mid-white/fonts
 
@@ -34,7 +34,7 @@ prettyPrint=false
 legacyOutput=false
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:packable-atlases/atlas-mid-white/OpenMoji.png,type:Input,regionName:null},{path:source-fonts/YanoneKaffeesatzCombined/YanoneKaffeesatz-combined.png,type:Input,regionName:null}]
+inputFiles=[{path:packable-atlases/atlas-mid-white/OpenMoji.png,type:Input,regionName:null},{path:source-fonts/GentiumUnItalicCombined/GentiumUnItalic-combined.png,type:Input,regionName:null}]
 keepInputFileExtensions=false
 
 
