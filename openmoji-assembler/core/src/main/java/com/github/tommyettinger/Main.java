@@ -58,19 +58,20 @@ import java.util.regex.Pattern;
  * </pre>
  */
 public class Main extends ApplicationAdapter {
-    public static final String MODE = "EMOJI_LARGE"; // run this first
-//        public static final String MODE = "EMOJI_MID";
+//    public static final String MODE = "EMOJI_LARGE"; // run this first
 //    public static final String MODE = "EMOJI_SMALL";
-//    public static final String MODE = "EMOJI_HTML";
+    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
 //    public static final String MODE = "MODIFY_JSON";
+//public static final String MODE = "WRITE_INFO";
 //    public static final String MODE = "ALTERNATE_PALETTES";
 
-//    public static final String TYPE = "color";
-    public static final String TYPE = "black";
+    public static final String TYPE = "color";
+//    public static final String TYPE = "black";
     public static final String RAW_DIR = "openmoji-72x72-" + TYPE;
 
-    public static final boolean UNICODE_ONLY = true;
+    public static final boolean UNICODE_ONLY = false;
+//    public static final boolean UNICODE_ONLY = true;
     public static final String SPAN = UNICODE_ONLY ? "limited" : "expanded";
     public static final String JSON = "openmoji-" + SPAN + ".json";
 
@@ -145,20 +146,20 @@ public class Main extends ApplicationAdapter {
                 Gdx.files.local("../../atlas-small/OpenMoji"+TYPE+".atlas").copyTo(current.child("atlas-small"));
             }
         }
-        else if("EMOJI_MID".equals(MODE)) {
+        else if("WRITE_INFO".equals(MODE)) {
             JsonValue json = reader.parse(Gdx.files.internal(JSON));
             ObjectSet<String> used = new ObjectSet<>(json.size);
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 String name = entry.getString("name");
                 if(used.add(name)) {
-                    name += ".png";
+//                    name += ".png";
                     entry.remove("hexcode");
-                    FileHandle original = Gdx.files.local("../../scaled-mid-"+TYPE+"/name/" + name);
-                    if (original.exists()) {
-                        if(entry.has("emoji"))
-                            original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
-                        original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/name/" + name));
-                    }
+//                    FileHandle original = Gdx.files.local("../../scaled-mid-"+TYPE+"/name/" + name);
+//                    if (original.exists()) {
+//                        if(entry.has("emoji"))
+//                            original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
+//                        original.copyTo(Gdx.files.local("../../renamed-mid-"+TYPE+"/name/" + name));
+//                    }
                 } else {
                     entry.remove();
                 }
@@ -229,8 +230,8 @@ public class Main extends ApplicationAdapter {
                         "<a href=\"index").append(UNICODE_ONLY ? "" : "-expanded").append(".html\">available here</a>.</p>\n");
             if(UNICODE_ONLY)
                 sb.append("<p>This list only includes emoji that can be represented with official (or semi-official)" +
-                        "Unicode codepoints. " +
-                        "It does not include the extra icons only found in OpenMoji, which are harder to type. " +
+                        "Unicode codepoints. It does not include the extra icons only found in OpenMoji, which are " +
+                        "harder to type, but are meant to be useful in several specialized fields. " +
                         "The expanded list of full-color emoji is <a href=\"index-expanded.html\">here</a>, " +
                         "and the expanded list of black-line-only emoji is <a href=\"black-expanded.html\">here</a>.</p>\n");
             else

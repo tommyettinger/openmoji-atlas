@@ -18,9 +18,10 @@ compared to naively scaling down with a default filter.
 # How do I get it?
 
 Atlases are available for 24x24 (small) and 32x32 (mid) sizes of OpenMoji. They come in full-color, black-line-only, and
-white-line-only versions. You can choose from [atlas-small-color](atlas-small-color/), [atlas-small-black](atlas-small-black/),
-[atlas-small-white](atlas-small-white/), [atlas-mid-color](atlas-mid-color/), [atlas-mid-black](atlas-mid-black/), and
-[atlas-mid-white](atlas-mid-white/). The black-line-only versions can't be recolored using a typical SpriteBatch with
+white-line-only versions. For the atlases that include all OpenMoji, including those that don't have a Unicode emoji to
+represent them, you can choose from [atlas-small-color](expanded/atlas-small-color/), [atlas-small-black](expanded/atlas-small-black/),
+[atlas-small-white](expanded/atlas-small-white/), [atlas-mid-color](expanded/atlas-mid-color/), [atlas-mid-black](expanded/atlas-mid-black/), and
+[atlas-mid-white](expanded/atlas-mid-white/). The black-line-only versions can't be recolored using a typical SpriteBatch with
 its default shader, but the white-line-only versions can be colored normally using `Batch#setColor(Color)`. The
 full-color versions sometimes use larger textures than the black or white line versions, but this is because the line
 versions show almost all flags identically (as an empty rectangle), and those get merged in the atlas. The full-color
