@@ -11,10 +11,10 @@ fast=true
 filterMag=Linear
 filterMin=Linear
 ignoreBlankImages=true
-maxHeight=8192
-maxWidth=8192
-minHeight=4096
-minWidth=4096
+maxHeight=4096
+maxWidth=2048
+minHeight=1024
+minWidth=1024
 paddingX=2
 paddingY=2
 pot=true
@@ -34,7 +34,7 @@ prettyPrint=false
 legacyOutput=false
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:packable-atlases/atlas-mid-white/OpenMoji.png,type:Input,regionName:null},{path:source-fonts/GentiumUnItalicCombined/GentiumUnItalic-combined.png,type:Input,regionName:null}]
+inputFiles=[{path:packable-atlases/atlas-mid-white/OpenMoji.png,type:Input,regionName:null},{path:source-fonts/GentiumUnItalic-combined.png,type:Input,regionName:null}]
 keepInputFileExtensions=false
 
 
