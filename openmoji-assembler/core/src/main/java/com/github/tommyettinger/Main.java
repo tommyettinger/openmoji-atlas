@@ -229,13 +229,13 @@ public class Main extends ApplicationAdapter {
                 sb.append("<p>These are the black-line-only emoji. There are also emoji that use full color "+
                         "<a href=\"index").append(UNICODE_ONLY ? "" : "-expanded").append(".html\">available here</a>.</p>\n");
             if(UNICODE_ONLY)
-                sb.append("<p>This list only includes emoji that can be represented with official (or semi-official)" +
+                sb.append("<p>This list only includes emoji that can be represented with official (or semi-official) " +
                         "Unicode codepoints. It does not include the extra icons only found in OpenMoji, which are " +
                         "harder to type, but are meant to be useful in several specialized fields. " +
                         "The expanded list of full-color emoji is <a href=\"index-expanded.html\">here</a>, " +
                         "and the expanded list of black-line-only emoji is <a href=\"black-expanded.html\">here</a>.</p>\n");
             else
-                sb.append("<p>This list includes some emoji that cannot be represented with official (or semi-official)" +
+                sb.append("<p>This list includes some emoji that cannot be represented with official (or semi-official) " +
                         "Unicode codepoints; these are extra icons only found in OpenMoji. They are harder to type. " +
                         "There are also lists of only official and semi-official emoji here, which are easier to use. " +
                         "The official list of full-color emoji is <a href=\"index.html\">here</a>, " +
