@@ -60,7 +60,8 @@ import java.util.regex.Pattern;
 public class Main extends ApplicationAdapter {
 //    public static final String MODE = "EMOJI_LARGE"; // run this first
 //    public static final String MODE = "EMOJI_SMALL";
-    public static final String MODE = "EMOJI_INOFFENSIVE"; // ugh, but needed
+//    public static final String MODE = "EMOJI_INOFFENSIVE"; // ugh, but needed
+    public static final String MODE = "EMOJI_INOFFENSIVE_MONO";
 //    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
 //    public static final String MODE = "MODIFY_JSON";
@@ -204,11 +205,13 @@ public class Main extends ApplicationAdapter {
                 }
             }
         }
-        else if("EMOJI_INOFFENSIVE".equals(MODE)) {
+        else if("EMOJI_INOFFENSIVE".equals(MODE) || "EMOJI_INOFFENSIVE_MONO".equals(MODE)) {
             JsonValue json = reader.parse(Gdx.files.internal(JSON));
             ObjectSet<String> used = new ObjectSet<>(json.size);
+            String where = "EMOJI_INOFFENSIVE".equals(MODE) ? "/inoffensive-" : "/inoffensive-mono-";
             for (JsonValue entry = json.child; entry != null; entry = entry.next) {
                 String name = entry.getString("name");
+                if(name.endsWith("skin tone")) continue; // we're intending to make the images grayscale.
                 if(name.contains("flag")) continue; // some false positives, but less politically sensitive stuff.
                 if("star of David".equals(name)) continue;
                 if("wheel of dharma".equals(name)) continue;
@@ -219,6 +222,10 @@ public class Main extends ApplicationAdapter {
                 if("menorah".equals(name)) continue;
                 if("dotted six-pointed star".equals(name)) continue;
                 if("khanda".equals(name)) continue;
+                if("red hair".equals(name)) continue;
+                if("curly hair".equals(name)) continue;
+                if("white hair".equals(name)) continue;
+                if("bald".equals(name)) continue;
                 if("no one under eighteen".equals(name)) continue;
                 if("no smoking".equals(name)) continue;
                 if("cigarette".equals(name)) continue;
@@ -306,14 +313,14 @@ public class Main extends ApplicationAdapter {
                     FileHandle original = Gdx.files.local("../../"+RAW_DIR+"/" + codename + ".png");
                     if (original.exists()) {
                         if(entry.has("emoji"))
-                            original.copyTo(Gdx.files.local("../../"+SPAN+"/inoffensive-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
-                        original.copyTo(Gdx.files.local("../../"+SPAN+"/inoffensive-"+TYPE+"/name/" + name));
+                            original.copyTo(Gdx.files.local("../../"+SPAN+where+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
+                        original.copyTo(Gdx.files.local("../../"+SPAN+where+TYPE+"/name/" + name));
                     }
                 } else {
                     entry.remove();
                 }
             }
-            Gdx.files.local("openmoji-info-inoffensive-" + SPAN + ".json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
+            Gdx.files.local("openmoji-info-" + ("EMOJI_INOFFENSIVE".equals(MODE) ? "inoffensive-" : "inoffensive-mono-") + SPAN + ".json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
         }
         else if("EMOJI_HTML".equals(MODE)) {
             JsonValue json = reader.parse(Gdx.files.internal("openmoji-info-" + SPAN + ".json"));
