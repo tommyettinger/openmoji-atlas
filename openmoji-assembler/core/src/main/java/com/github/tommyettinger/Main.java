@@ -60,7 +60,8 @@ import java.util.regex.Pattern;
 public class Main extends ApplicationAdapter {
 //    public static final String MODE = "EMOJI_LARGE"; // run this first
 //    public static final String MODE = "EMOJI_SMALL";
-    public static final String MODE = "EMOJI_HTML";
+    public static final String MODE = "EMOJI_INOFFENSIVE"; // ugh, but needed
+//    public static final String MODE = "EMOJI_HTML";
 //    public static final String MODE = "FLAG";
 //    public static final String MODE = "MODIFY_JSON";
 //public static final String MODE = "WRITE_INFO";
@@ -202,6 +203,117 @@ public class Main extends ApplicationAdapter {
                     entry.remove();
                 }
             }
+        }
+        else if("EMOJI_INOFFENSIVE".equals(MODE)) {
+            JsonValue json = reader.parse(Gdx.files.internal(JSON));
+            ObjectSet<String> used = new ObjectSet<>(json.size);
+            for (JsonValue entry = json.child; entry != null; entry = entry.next) {
+                String name = entry.getString("name");
+                if(name.contains("flag")) continue; // some false positives, but less politically sensitive stuff.
+                if("star of David".equals(name)) continue;
+                if("wheel of dharma".equals(name)) continue;
+                if("yin yang".equals(name)) continue;
+                if("latin cross".equals(name)) continue;
+                if("orthodox cross".equals(name)) continue;
+                if("star and crescent".equals(name)) continue;
+                if("menorah".equals(name)) continue;
+                if("dotted six-pointed star".equals(name)) continue;
+                if("khanda".equals(name)) continue;
+                if("no one under eighteen".equals(name)) continue;
+                if("no smoking".equals(name)) continue;
+                if("cigarette".equals(name)) continue;
+                if("bomb".equals(name)) continue;
+                if("church".equals(name)) continue;
+                if("mosque".equals(name)) continue;
+                if("hindu temple".equals(name)) continue;
+                if("synagogue".equals(name)) continue;
+                if("shinto shrine".equals(name)) continue;
+                if("kaaba".equals(name)) continue;
+                if("map of Japan".equals(name)) continue;
+                if("wedding".equals(name)) continue;
+                if("Tokyo tower".equals(name)) continue;
+                if("Statue of Liberty".equals(name)) continue;
+                if("sake".equals(name)) continue;
+                if("love hotel".equals(name)) continue;
+                if("breast-feeding".equals(name)) continue;
+                if("eggplant".equals(name)) continue;
+                if("peach".equals(name)) continue;
+                if("bottle with popping cork".equals(name)) continue;
+                if("wine glass".equals(name)) continue;
+                if("cocktail glass".equals(name)) continue;
+                if("tropical drink".equals(name)) continue;
+                if("beer mug".equals(name)) continue;
+                if("clinking beer mugs".equals(name)) continue;
+                if("clinking glasses".equals(name)) continue;
+                if("tumbler glass".equals(name)) continue;
+                if("drunk person".equals(name)) continue;
+                if("trump".equals(name)) continue;
+                if("Greta Thunberg".equals(name)) continue;
+                if("Twitter".equals(name)) continue;
+                if("pinterest".equals(name)) continue;
+                if("facebook".equals(name)) continue;
+                if("instagram".equals(name)) continue;
+                if("youtube".equals(name)) continue;
+                if("github".equals(name)) continue;
+                if("linkedin".equals(name)) continue;
+                if("android".equals(name)) continue;
+                if("musicbrainz".equals(name)) continue;
+                if("openfoodfact".equals(name)) continue;
+                if("openstreetmap".equals(name)) continue;
+                if("wikidata".equals(name)) continue;
+                if("Firefox".equals(name)) continue;
+                if("Safari".equals(name)) continue;
+                if("Opera".equals(name)) continue;
+                if("Chromium".equals(name)) continue;
+                if("Chrome".equals(name)) continue;
+                if("Netscape Navigator".equals(name)) continue;
+                if("Internet Explorer".equals(name)) continue;
+                if("Edge".equals(name)) continue;
+                if("iNaturalist".equals(name)) continue;
+                if("gitlab".equals(name)) continue;
+                if("mastodon".equals(name)) continue;
+                if("peertube".equals(name)) continue;
+                if("pixelfed".equals(name)) continue;
+                if("signal".equals(name)) continue;
+                if("element".equals(name)) continue;
+                if("jellyfin".equals(name)) continue;
+                if("reddit".equals(name)) continue;
+                if("discord".equals(name)) continue;
+                if("c".equals(name)) continue;
+                if("cplusplus".equals(name)) continue;
+                if("csharp".equals(name)) continue;
+                if("chrome canary".equals(name)) continue;
+                if("firefox developer".equals(name)) continue;
+                if("firefox nightly".equals(name)) continue;
+                if("javascript".equals(name)) continue;
+                if("typescript".equals(name)) continue;
+                if("webassembly".equals(name)) continue;
+                if("svg".equals(name)) continue;
+                if("markdown".equals(name)) continue;
+                if("winrar".equals(name)) continue;
+                if("ubuntu".equals(name)) continue;
+                if("windows".equals(name)) continue;
+                if("artstation".equals(name)) continue;
+                if("apple".equals(name)) continue;
+                if(name.startsWith("family")) continue;
+                if(name.startsWith("couple")) continue;
+                if(name.startsWith("kiss")) continue;
+                if(name.startsWith("pregnant")) continue;
+                if(name.contains("holding hands")) continue;
+                if(used.add(name)) {
+                    String codename = entry.getString("hexcode");
+                    name += ".png";
+                    FileHandle original = Gdx.files.local("../../"+RAW_DIR+"/" + codename + ".png");
+                    if (original.exists()) {
+                        if(entry.has("emoji"))
+                            original.copyTo(Gdx.files.local("../../"+SPAN+"/inoffensive-"+TYPE+"/emoji/" + entry.getString("emoji") + ".png"));
+                        original.copyTo(Gdx.files.local("../../"+SPAN+"/inoffensive-"+TYPE+"/name/" + name));
+                    }
+                } else {
+                    entry.remove();
+                }
+            }
+            Gdx.files.local("openmoji-info-inoffensive-" + SPAN + ".json").writeString(json.toJson(JsonWriter.OutputType.json).replace("{", "\n{"), false);
         }
         else if("EMOJI_HTML".equals(MODE)) {
             JsonValue json = reader.parse(Gdx.files.internal("openmoji-info-" + SPAN + ".json"));
