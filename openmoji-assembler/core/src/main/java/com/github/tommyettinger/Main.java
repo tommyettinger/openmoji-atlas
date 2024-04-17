@@ -68,8 +68,8 @@ public class Main extends ApplicationAdapter {
 //public static final String MODE = "WRITE_INFO";
 //    public static final String MODE = "ALTERNATE_PALETTES";
 
-    public static final String TYPE = "color";
-//    public static final String TYPE = "black";
+//    public static final String TYPE = "color";
+    public static final String TYPE = "black";
     public static final String RAW_DIR = "openmoji-72x72-" + TYPE;
 
     public static final boolean UNICODE_ONLY = false;
